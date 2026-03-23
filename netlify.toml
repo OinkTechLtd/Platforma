@@ -1,4 +1,0 @@
-[build]
-  base = "apps/web"
-  command = "bun run build"
-  publish = "build/client"
