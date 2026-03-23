@@ -1,4 +1,6 @@
 import path from 'node:path';
+import netlify from '@netlify/vite-plugin';
+import netlifyReactRouter from '@netlify/vite-plugin-react-router';
 import { reactRouter } from '@react-router/dev/vite';
 import { reactRouterHonoServer } from 'react-router-hono-server/dev';
 import { defineConfig } from 'vite';
@@ -13,7 +15,14 @@ import { nextPublicProcessEnv } from './plugins/nextPublicProcessEnv';
 import { restart } from './plugins/restart';
 import { restartEnvFileChange } from './plugins/restartEnvFileChange';
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
+  build: {
+    rollupOptions: isSsrBuild
+      ? {
+          input: './__create/index.ts',
+        }
+      : undefined,
+  },
   // Keep them available via import.meta.env.NEXT_PUBLIC_*
   envPrefix: 'NEXT_PUBLIC_',
   optimizeDeps: {
@@ -62,6 +71,8 @@ export default defineConfig({
     loadFontsFromTailwindSource(),
     addRenderIds(),
     reactRouter(),
+    netlifyReactRouter(),
+    netlify(),
     tsconfigPaths(),
     aliases(),
     layoutWrapperPlugin(),
@@ -89,4 +100,4 @@ export default defineConfig({
       clientFiles: ['./src/app/**/*', './src/app/root.tsx', './src/app/routes.ts'],
     },
   },
-});
+}));
